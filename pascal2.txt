@@ -1,0 +1,6 @@
+program VALIDADOR_TERMINA_AB;
+ uses
+   CRT;
+var clave:string;
+FUNCTION TERMINA_AB(x:string):BOOLEAN;
+CONST

@@ -1,0 +1,18 @@
+program VALIDADOR_TERMINA_AB;
+
+uses
+  CRT;
+
+var clave: string;
+
+function termina(x: string): boolean;
+const
+  q = 1;
+  f = 2.5;
+begin
+  // cuerpo
+end;
+
+begin
+  // Cuerpo
+end.

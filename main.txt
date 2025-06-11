@@ -1,0 +1,188 @@
+// // Importación de módulos
+// import fs from 'fs';
+// import { esOperadorAritmetico, esOperadorRelacional, esPalabraReservada, esPuntuacion, esTipoDato } from './analizadorFunciones.js';
+// import { automata_asignacion } from './automatas/automata_asignacion.js';
+// import { automata_identificadores } from './automatas/automata_identificadores.js';
+// import { automata_reales } from './automatas/automata_reales.js';
+// import { automata_enteros } from './automatas/automata_enteros.js';
+// import { analizarPrograma } from './analizadorSintactico.js';  // Importación de la función analizador
+
+// // Lectura del archivo pascal4.txt
+// fs.readFile("pascal4.txt", "utf8", (err, data) => {
+//   if (err) {
+//     console.error("Error al leer el archivo:", err);
+//     return;
+//   }
+
+//   // Separar el texto por palabras, números y símbolos especiales
+//   const regex = /(\b\w+\b|\d+\.\d+|\d+|[^\s\w])/g;
+//   const text_separado = data.match(regex);
+
+//   if (text_separado) {
+//     analizar(text_separado);  // Llama a la función de análisis léxico
+//   } else {
+//     console.error("No se encontraron tokens en el archivo.");
+//   }
+// });
+
+// // Función de análisis léxico y sintáctico
+// function analizar(contenido) {
+//   let hayErrorLexico = false;
+//   let hayErrorSintactico = false;
+//   let estadoActual = 'inicio';
+
+//   for (let i = 0; i < contenido.length; i++) {
+//     const token = contenido[i];
+
+//     // Verificación de errores léxicos para caracteres no permitidos
+//     if (/^[#@&$%]+/.test(token)) {
+//       console.log("ERROR LÉXICO ----->", token);
+//       hayErrorLexico = true;
+//       continue;
+//     }
+
+//     // Verificar si es una palabra reservada
+//     if (esPalabraReservada(token)) {
+//       console.log(token, "        --> Es una palabra reservada en Pascal");
+//     }
+//     // Verificar si es un tipo de dato
+//     else if (esTipoDato(token)) {
+//       console.log(token, "        --> Es un tipo de dato en Pascal");
+//     }
+//     // Verificar si es un operador aritmético
+//     else if (esOperadorAritmetico(token)) {
+//       console.log(token, "        --> Es un operador aritmético en Pascal");
+//     }
+//     // Verificar si es un operador relacional
+//     else if (esOperadorRelacional(token)) {
+//       console.log(token, "        --> Es un operador relacional en Pascal");
+//     }
+//     // Verificar si es un signo de puntuación
+//     else if (esPuntuacion(token)) {
+//       console.log(token, "        --> Es un signo de puntuación en Pascal");
+//     }
+//     // Verificar si es un paréntesis
+//     else if (token === ")" || token === "(") {
+//       console.log(token, "        --> Es un paréntesis en Pascal");
+//     }
+//     // Verificar si es un corchete
+//     else if (token === "]" || token === "[") {
+//       console.log(token, "        --> Es un corchete en Pascal");
+//     }
+//     // Verificar si es un signo de apostrofe
+//     else if (token === "'") {
+//       console.log(token, "        --> Es un signo de apostrofe en Pascal");
+//     }
+//     // Verificar si es un número real
+//     else if (automata_reales(token)) {
+//       console.log(token, "        --> Es un número real en Pascal");
+//     }
+//     // Verificar si es un número entero mediante autómata
+//     else if (automata_enteros(token)) {
+//       console.log(token, "        --> Es un número entero en Pascal");
+//     }
+//     // Verificar si es una asignación mediante autómata
+//     else if (automata_asignacion(token)) {
+//       console.log(token, "        --> Es una asignación en Pascal");
+//     }
+//     // Verificar si es un identificador mediante autómata
+//     else if (automata_identificadores(token)) {
+//       console.log(token, "        --> Es un identificador en Pascal");
+//     }
+//     // Si no coincide con ningún patrón, se considera un error léxico
+//     else {
+//       console.log("ERROR LÉXICO ----->", token);
+//       hayErrorLexico = true;
+//       continue;
+//     }
+
+//     // Análisis sintáctico básico
+//     switch (estadoActual) {
+//       case 'inicio':
+//         if (token.toLowerCase() === 'program') {
+//           estadoActual = 'declaracion_programa';
+//         } else {
+//           console.log("ERROR SINTÁCTICO -----> Se esperaba 'program'");
+//           hayErrorSintactico = true;
+//         }
+//         break;
+//       case 'declaracion_programa':
+//         if (automata_identificadores(token)) {
+//           estadoActual = 'declaracion_uso';
+//         } else {
+//           console.log("ERROR SINTÁCTICO -----> Se esperaba un identificador para el programa");
+//           hayErrorSintactico = true;
+//         }
+//         break;
+//       case 'declaracion_uso':
+//         if (token.toLowerCase() === 'uses') {
+//           estadoActual = 'identificador_modulo';
+//         } else if (token.toLowerCase() === 'var' || token.toLowerCase() === 'begin') {
+//           estadoActual = 'declaracion_variables';
+//         } else {
+//           console.log("ERROR SINTÁCTICO -----> Se esperaba 'uses', 'var', o 'begin'");
+//           hayErrorSintactico = true;
+//         }
+//         break;
+//       case 'identificador_modulo':
+//         if (automata_identificadores(token)) {
+//           estadoActual = 'declaracion_variables';
+//         } else {
+//           console.log("ERROR SINTÁCTICO -----> Se esperaba un identificador de módulo");
+//           hayErrorSintactico = true;
+//         }
+//         break;
+//       case 'declaracion_variables':
+//         if (token.toLowerCase() === 'var') {
+//           estadoActual = 'definicion_variables';
+//         } else if (token.toLowerCase() === 'begin') {
+//           estadoActual = 'cuerpo_principal';
+//         } else {
+//           console.log("ERROR SINTÁCTICO -----> Se esperaba 'var' o 'begin'");
+//           hayErrorSintactico = true;
+//         }
+//         break;
+//       case 'definicion_variables':
+//         if (automata_identificadores(token)) {
+//           estadoActual = 'tipo_variable';
+//         } else {
+//           console.log("ERROR SINTÁCTICO -----> Se esperaba un identificador de variable");
+//           hayErrorSintactico = true;
+//         }
+//         break;
+//       case 'tipo_variable':
+//         if (esTipoDato(token)) {
+//           estadoActual = 'declaracion_variables';
+//         } else {
+//           console.log("ERROR SINTÁCTICO -----> Se esperaba un tipo de dato");
+//           hayErrorSintactico = true;
+//         }
+//         break;
+//       case 'cuerpo_principal':
+//         if (token.toLowerCase() === 'end.') {
+//           estadoActual = 'fin_programa';
+//         }
+//         break;
+//       default:
+//         console.log("ERROR SINTÁCTICO -----> Estructura inesperada");
+//         hayErrorSintactico = true;
+//     }
+//   }
+
+//   // Verificar si no hubo errores léxicos ni sintácticos
+//   if (!hayErrorLexico && !hayErrorSintactico) {
+//     console.log("EL CODIGO ES VALIDO");
+//   } else if (hayErrorSintactico) {
+//     console.log("ERROR SINTÁCTICO ENCONTRADO");
+//   }
+// }
+
+
+
+  //  Separar el texto por espacios, saltos de línea y tabulaciones, manteniendo los delimitadores
+  // \b es un delimitador de palabra, que coincide con la posición al principio o al final de una palabra.
+  // \w+ coincide con una o más letras, dígitos o guiones bajos (cualquier carácter alfanumérico). En conjunto, \b\w+\b captura palabras completas.
+  // \s+ coincide con uno o más espacios en blanco
+  // [^] es una negación de conjunto de caracteres, por lo que [^\s] coincide con cualquier carácter que no sea un espacio en blanco.
+  // |: Es el operador OR en expresiones regulares, lo que significa que coincidirá con la primera parte (\b\w+\b) o con la segunda parte ([^\s]).
+  // g: Es la bandera global, que indica que la búsqueda debe realizarse en toda la cadena, no solo en la primera coincidencia.

@@ -1,0 +1,14 @@
+program Ejemplo;
+uses SysUtils;
+var (error)
+  var numero: integer;
+  nombre: string;
+  promedio: real;
+begin;
+  numero := 10;
+  nombre := 'Camilo';
+  promedio := 9.5;
+  writeln('Nombre: ', nombre);
+  writeln('Numero: ', numero);
+  writeln('Promedio: ', promedio);
+end;
